@@ -42,10 +42,10 @@ hs['BOTH'] = pd.to_datetime(hs['BOTH'], format='%m/%d/%y,%I:%M %p')
 hs['START DATE'] = pd.to_datetime(hs['START DATE'], format='%m/%d/%y')
 hs = hs[hs['BOTH'] >= datetime.today()]
 
-date_str = input('Desired Ticket Day (Format MM-DD-YYYY)')
+date_str = input('Desired Ticket Day (Format MM-DD-YYYY)\n')
 date_ob = datetime.strptime(date_str, '%m-%d-%Y')
 
-file_str = input('Filepath for output, ending with \'yourgame.csv\'')
+file_str = input('Filepath for output, ending with \'yourgame.csv\'\n')
 
 
 
