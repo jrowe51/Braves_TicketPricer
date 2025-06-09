@@ -220,33 +220,36 @@ while (counter < 254) :
     children = elements[0].findChildren()
     kids = children[4].findChildren()
     
-    final = kids[-1].text
-    if (len(final) > 0) :
+    if (len(kids) >0) :
         
-        test = final.split()
-
-        #Makes sure we only record numbers for an element describing number of tickets
-        if (test[-1] == "Tickets"):
-            numtix = final[0:2]
+        final = kids[-1].text
+        if (len(final) > 0) :
+            
+            test = final.split()
+        
+            #Makes sure we only record numbers for an element describing number of tickets
+            if (test[-1] == "Tickets"):
+                numtix = final[0:2]
+            else:
+                numtix = None
+        
         else:
             numtix = None
-    
-    else:
-        numtix = None
-
-    #Step 2.5 Use historical data to assign comparison price, assign label to section, and assign actual current price
-    pch = utils.assign_price(section, price_list)
-
-    section = section.split(',')[0]
-
-    newline = str(section) + ',' + str(numtix) + ',' + pch + ',' + str(date.today())
-    tix_file = open(filename, 'a')
-    tix_file.write(newline)
-    tix_file.write('\n')
-    tix_file.close()
-
-    counter += 1
+        
+        #Step 2.5 Use historical data to assign comparison price, assign label to section, and assign actual current price
+        pch = assign_price(section, price_list)
+        
+        section = section.split(',')[0]
+        
+        newline = str(section) + ',' + str(numtix) + ',' + pch + ',' + str(date.today())
+        tix_file = open(filename, 'a')
+        tix_file.write(newline)
+        tix_file.write('\n')
+        tix_file.close()
+        
+        counter += 1
 
 d.quit()
+
 
 
