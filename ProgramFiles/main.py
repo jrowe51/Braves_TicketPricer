@@ -28,14 +28,33 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.common.exceptions import ElementNotInteractableException
 from pathlib import Path
-import utils
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+print('Current directory:' + current_dir)
+sys.path.append(current_dir)
+
+import importlib.util
+
+# Get the absolute path to the module
+module_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utils.py")
+
+# Create a module spec from the path
+spec = importlib.util.spec_from_file_location("utils", module_path)
+
+# Create a module from the spec
+module = importlib.util.module_from_spec(spec)
+
+# Execute the module in the module namespace
+spec.loader.exec_module(module)
 
 
 
 
 #STEP 1 (enter the date for the game you want to record)
 
-hs = pd.read_csv('GameTicketPromotionPrice.csv')
+hs = pd.read_csv(current_dir +'/GameTicketPromotionPrice.csv')
 hs['BOTH'] = hs['START DATE'] + ',' + hs['START TIME']
 
 hs['BOTH'] = pd.to_datetime(hs['BOTH'], format='%m/%d/%y,%I:%M %p')
@@ -53,7 +72,7 @@ file_str = input('Filepath for output, ending with \'yourgame.csv\'\n')
 i_list = hs.index[hs['START DATE'] == date_ob].to_list()
 today_i = hs.index[0]
 master_i = i_list[0] - today_i + 1
-
+print(master_i)
 filename = file_str
     
 
@@ -94,15 +113,15 @@ cookies = '//*[@id="onetrust-accept-btn-handler"]'
 
 
 #master_i corresponds to button on webpage, derived from game date
-ticketX = '//*[@id="__next"]/main/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[' + str(master_i) + ']/div[1]/div[3]/div[3]/a'
-
+#ticketX = '//*[@id="__next"]/main/div[2]/div/div/div[2]/div/div/div/div/div[2]/div[' + str(master_i) + ']/div[1]/div[3]/div[3]/a'
+ticketX = '//*[@id="__next"]/div/main/div[2]/div/div/div[2]/div/div/div/div[3]/div[2]/div[' + str(master_i) + ']/div/div[3]/div[3]/a'
 
 print(ticketX)
 time.sleep(5)
 d.find_element(By.XPATH, cookies).click()
-time.sleep(5)
+time.sleep(7)
 d.find_element(By.XPATH, ticketX).click()
-time.sleep(5)
+time.sleep(7)
 
 
 
@@ -205,7 +224,7 @@ while (counter < 254) :
     sec_241 = '#map-container > div.zoomer > div.map__zoomer > svg > g.polygons > path:nth-child(' + str(counter) +')'
     action = ActionChains(d)
     polygon = d.find_element(By.CSS_SELECTOR, sec_241)
-    action.move_to_element(polygon).pause(5).perform()
+    action.move_to_element(polygon).perform()
     #print(polygon.get_attribute('data-section-name'))
     section = polygon.get_attribute('data-section-name')
     
@@ -218,7 +237,7 @@ while (counter < 254) :
     soup1 = BeautifulSoup(d.page_source, 'html.parser')
     elements = soup1.find_all(id= 'map-container')
     children = elements[0].findChildren()
-    kids = children[4].findChildren()
+    kids = children[0].findChildren()
     
     if (len(kids) >0) :
         
@@ -237,7 +256,7 @@ while (counter < 254) :
             numtix = None
         
         #Step 2.5 Use historical data to assign comparison price, assign label to section, and assign actual current price
-        pch = assign_price(section, price_list)
+        pch = module.assign_price(section, price_list)
         
         section = section.split(',')[0]
         
@@ -247,9 +266,10 @@ while (counter < 254) :
         tix_file.write('\n')
         tix_file.close()
         
-        counter += 1
 
+
+        time.sleep(7)
+    counter += 1
 d.quit()
-
 
 
